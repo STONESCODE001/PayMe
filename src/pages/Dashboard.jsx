@@ -20,7 +20,8 @@ export default function Dashboard() {
     const [payQrModal, setPayQrModal] = useState(false);
     const [qrValue, setQrValue] = useState("");
     const [inputValue, setInputValue] = useState("");
-    const [requestedAmount, setRequestedAmount] = useState("5000");
+    const [requestedAmount, setRequestedAmount] = useState("");
+    const [requesterUid, setRequesterUid] = useState("");
     //const [scannedData, setScannedData] = useState("");
     const [error, setError] = useState("");
     const [showScanner, setShowScanner] = useState(false);
@@ -57,25 +58,22 @@ export default function Dashboard() {
         let stringPart = parts[1].replace(/"/g, ""); // Remove double quotes from the second part
         console.log(numberPart);
         console.log(stringPart);
-        
-        /*const input = '5000;"jsishsjjsksosjejeiks"';*/
-        /* const [number, text] = result.split(";");
-        const cleanedText = text.replace(/"/g, "");
-        console.log("Number:", number);
-        console.log("Text:", cleanedText);
-        if (number && cleanedText) {
-            setScannedData(cleanedText);
 
-            setRequestedAmount(number);
-            setPayQrModal(true);
+        setRequestedAmount(numberPart);
+        setRequesterUid(stringPart);
+        setError("");
+        setShowScanner(false); // Hide the scanner after a successful scan
+        setPayQrModal(true);
 
-            setError("");
-            setShowScanner(false); // Hide the scanner after a successful scan
+        /*if (numberPart && stringPart) {
+            //setScannedData(cleanedText);
         }*/
     };
 
     const payFunction = () => {
-        alert(requestedAmount + " " + scannedData);
+        alert(
+            requesterUid + " " + requestedAmount + " current user uid" + userId
+        );
     };
 
     // Handles errors during the scanning process (e.g., camera access issues)
