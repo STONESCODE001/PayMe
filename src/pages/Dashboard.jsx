@@ -21,7 +21,7 @@ export default function Dashboard() {
     const [qrValue, setQrValue] = useState("");
     const [inputValue, setInputValue] = useState("");
     const [requestedAmount, setRequestedAmount] = useState("5000");
-    const [scannedData, setScannedData] = useState("");
+    //const [scannedData, setScannedData] = useState("");
     const [error, setError] = useState("");
     const [showScanner, setShowScanner] = useState(false);
 
@@ -48,6 +48,16 @@ export default function Dashboard() {
     // Handles when a QR code is successfully scanned
     const handleScan = result => {
         console.log(result);
+        let scannedData = result;
+        let dataValue = scannedData.text;
+        console.log(dataValue);
+
+        let parts = dataValue.split(";"); // Split at the semicolon
+        let numberPart = parseInt(parts[0]); // Convert the first part to a number
+        let stringPart = parts[1].replace(/"/g, ""); // Remove double quotes from the second part
+        console.log(numberPart);
+        console.log(stringPart);
+        
         /*const input = '5000;"jsishsjjsksosjejeiks"';*/
         /* const [number, text] = result.split(";");
         const cleanedText = text.replace(/"/g, "");
@@ -460,7 +470,7 @@ export default function Dashboard() {
                                                                 handleScan(
                                                                     result
                                                                 ); // Handle successful scan
-                                                            if (error) 
+                                                            if (error)
                                                                 handleError(
                                                                     error
                                                                 ); // Handle errors
