@@ -49,7 +49,7 @@ export default function Dashboard() {
     const handleScan = result => {
         console.log(result);
         /*const input = '5000;"jsishsjjsksosjejeiks"';*/
-        const [number, text] = result.split(";");
+        /* const [number, text] = result.split(";");
         const cleanedText = text.replace(/"/g, "");
         console.log("Number:", number);
         console.log("Text:", cleanedText);
@@ -61,7 +61,7 @@ export default function Dashboard() {
 
             setError("");
             setShowScanner(false); // Hide the scanner after a successful scan
-        }
+        }*/
     };
 
     const payFunction = () => {
@@ -70,7 +70,7 @@ export default function Dashboard() {
 
     // Handles errors during the scanning process (e.g., camera access issues)
     const handleError = err => {
-        console.error(err);
+        console.error(err + "from camera error");
         setError("Unable to access camera. Please check your permissions.");
     };
 
@@ -460,7 +460,7 @@ export default function Dashboard() {
                                                                 handleScan(
                                                                     result
                                                                 ); // Handle successful scan
-                                                            if (error)
+                                                            if (error) 
                                                                 handleError(
                                                                     error
                                                                 ); // Handle errors
