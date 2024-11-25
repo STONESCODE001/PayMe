@@ -2,19 +2,22 @@ import { useState } from "react";
 import { Outlet, Link } from "react-router-dom";
 import Herosection from "../components/Herosection.jsx";
 import { useNavigate } from "react-router-dom";
+import { auth, db } from "../firebase-config.jsx";
+import { signInAnonymously } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function Homepage() {
     const navigate = useNavigate();
 
-    const SignupUser = async => {
+    /* const SignupUser = async => {
         navigate("/Dashboard");
-    };
-    /* const SignupUser = async e => {
+    };*/
+    const SignupUser = async e => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
             // Sign in anonymously
             const userCredential = await signInAnonymously(auth);
-            const user = userCredential.user;
+            const user = auth.currentUser;
             console.log("Anonymous user signed in:", user);
 
             // Write user data to Firestore
@@ -34,11 +37,12 @@ export default function Homepage() {
                 uid: userId, // Include the user's UID
                 balance: 10000 // Set the initial balance to 10,000
             });
+            navigate("/Dashboard", { state: { userId } });
             console.log("User data written successfully.");
         } catch (error) {
             console.error("Error writing user data:", error.message);
         }
-    };*/
+    };
     return (
         <>
             <Herosection />
@@ -54,7 +58,7 @@ export default function Homepage() {
                         <form
                             /*action="#" method="POST"*/ className="space-y-6"
                         >
-                            <div>
+                            <div className="hidden">
                                 <label
                                     htmlFor="email"
                                     className="block text-sm/6 font-medium text-gray-900"

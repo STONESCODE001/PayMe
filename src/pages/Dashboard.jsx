@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ReactDOM from "react-dom";
 import {
     Dialog,
     DialogBackdrop,
@@ -9,9 +10,9 @@ import {
     ExclamationTriangleIcon,
     CreditCardIcon
 } from "@heroicons/react/24/solid";
-import ReactDOM from "react-dom";
 import QRCode from "react-qr-code";
 import { QrReader } from "react-qr-reader";
+import { useLocation } from "react-router-dom";
 
 export default function Dashboard() {
     const [open, setOpen] = useState(false);
@@ -24,9 +25,19 @@ export default function Dashboard() {
     const [error, setError] = useState("");
     const [showScanner, setShowScanner] = useState(false);
 
-    const generateQRCode = () => {
+    {
+        /* passing data */
+    }
+    const location = useLocation();
+    const { userId } = location.state || {};
+    //console.log(userId);
+
+    const generateQRCode = userId => {
+        const UUID = JSON.stringify(userId);
+        console.log(UUID);
         if (inputValue.trim()) {
-            setQrValue(inputValue);
+            console.log(inputValue + ";" + UUID);
+            setQrValue(inputValue + ";" + UUID);
             setQrModal(true); // Open the modal
             console.log("QR Code generated for:", inputValue);
         } else {
@@ -36,11 +47,25 @@ export default function Dashboard() {
 
     // Handles when a QR code is successfully scanned
     const handleScan = result => {
-        if (result) {
-            setScannedData(result.text || result);
+        console.log(result);
+        /*const input = '5000;"jsishsjjsksosjejeiks"';*/
+        const [number, text] = result.split(";");
+        const cleanedText = text.replace(/"/g, "");
+        console.log("Number:", number);
+        console.log("Text:", cleanedText);
+        if (number && cleanedText) {
+            setScannedData(cleanedText);
+
+            setRequestedAmount(number);
+            setPayQrModal(true);
+
             setError("");
             setShowScanner(false); // Hide the scanner after a successful scan
         }
+    };
+
+    const payFunction = () => {
+        alert(requestedAmount + " " + scannedData);
     };
 
     // Handles errors during the scanning process (e.g., camera access issues)
@@ -70,7 +95,7 @@ export default function Dashboard() {
                     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
                         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                             <h2 className="mt-10 text-center text-sm/9 font-bold tracking-tight text-gray-400 truncate">
-                                UUID hsusvsjshsuhshshshhaj
+                                UUID {userId}
                             </h2>
                             <h2 className="text-balance  text-center text-5xl font-black tracking-tight text-gray-900 sm:text-7xl">
                                 &#8358; 10,000
@@ -211,7 +236,7 @@ export default function Dashboard() {
                                     </div>
                                     <button
                                         type="button"
-                                        onClick={generateQRCode}
+                                        onClick={() => generateQRCode(userId)}
                                         className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto mt-6"
                                     >
                                         Continue
@@ -383,7 +408,7 @@ export default function Dashboard() {
                                     </div>
                                     <button
                                         type="button"
-                                        //onClick={generateQRCode}
+                                        onClick={payFunction}
                                         className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-bold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto mt-6 "
                                     >
                                         Pay
