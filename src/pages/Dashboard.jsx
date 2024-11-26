@@ -22,6 +22,8 @@ import {
     updateDoc
 } from "firebase/firestore";
 import { auth, db } from "../firebase-config.jsx";
+import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
     const [open, setOpen] = useState(false);
@@ -37,18 +39,41 @@ export default function Dashboard() {
     const [userId, setuserId] = useState("");
     const [successModalOpen, setSuccessModalOpen] = useState(false);
     const [failedModalOpen, setFailedModalOpen] = useState(false);
+    const navigate = useNavigate();
 
+    // Listener to detect changes in authentication state
     useEffect(() => {
-        //const auth = getAuth();
+        const unsubscribe = onAuthStateChanged(auth, currentUser => {
+            if (currentUser) {
+                // If the user is logged in, set user in state
+                const user = auth.currentUser;
+                setuserId(user.uid);
+                console.log("user still signed in");
+            } else {
+                // If no user is logged in, redirect to the homepage
+                //navigate("/");
+                console.log("no user signed in");
+            }
+        });
+
+        // Cleanup the listener when the component unmounts
+        return () => unsubscribe();
+    }, [navigate]);
+
+    /* if (!user) {
+        return <div>Loading...</div>; // Show a loading message while we check authentication
+    }*/
+
+    /*useEffect(() => {
         const user = auth.currentUser;
 
         if (user) {
             setuserId(user.uid);
         } else {
             console.error("No user found, redirecting to login...");
-            window.location.href = "/"; // Redirect to the homepage
+            //window.location.href = "/"; // Redirect to the homepage
         }
-    }, []);
+    }, []);*/
 
     /* const location = useLocation();
     const { userId } = location.state || {};*/

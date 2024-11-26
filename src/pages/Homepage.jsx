@@ -1,17 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, Link } from "react-router-dom";
 import Herosection from "../components/Herosection.jsx";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase-config.jsx";
-import { signInAnonymously } from "firebase/auth";
+import { signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
 export default function Homepage() {
     const navigate = useNavigate();
+    const [user, setUser] = useState("");
 
     /* const SignupUser = async => {
         navigate("/Dashboard");
     };*/
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, currentUser => {
+            if (currentUser) {
+                // If the user is logged in, update the user state and navigate to Dashboard
+                setUser(currentUser);
+                navigate("/Dashboard"); // Redirect to Dashboard page
+            } else {
+                // If no user is logged in, ensure the user state is null
+                setUser(null);
+            }
+        });
+
+        // Cleanup the listener on component unmount
+        return () => unsubscribe();
+    }, [navigate]);
+
     const SignupUser = async e => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
@@ -37,7 +55,8 @@ export default function Homepage() {
                 uid: userId, // Include the user's UID
                 balance: 10000 // Set the initial balance to 10,000
             });
-            navigate("/Dashboard", { state: { userId } });
+            //navigate("/Dashboard", { state: { userId } });
+            navigate("/Dashboard");
             console.log("User data written successfully.");
         } catch (error) {
             console.error("Error writing user data:", error.message);
