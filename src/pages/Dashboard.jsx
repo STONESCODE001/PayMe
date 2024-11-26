@@ -96,7 +96,7 @@ export default function Dashboard() {
             querySnapshot.forEach(doc => {
                 console.log(doc.id, " => ", doc.data(), doc.data().balance);
 
-                const balance = doc.data().balance;
+                let balance = doc.data().balance;
 
                 if (uid === userId) {
                     if (requestedAmount > balance) {
