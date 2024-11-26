@@ -77,25 +77,26 @@ export default function Dashboard() {
             requesterUid + " " + requestedAmount + " current user uid" + userId
         );
 
-        const q = query(
-            collection(db, "users"),
-            where("uid", "==", requesterUid)
-        );
+        // Call the function for requesterUid
+        await queryUserByUID(requesterUid);
 
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach(doc => {
-            // doc.data() is never undefined for query doc snapshots
-            console.log(doc.id, " => ", doc.data());
-        });
-
-        const q = query(collection(db, "users"), where("uid", "==", userId));
-
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach(doc => {
-            // doc.data() is never undefined for query doc snapshots
-            console.log("current user", doc.id, " => ", doc.data());
-        });
+        // Call the function for userId
+        await queryUserByUID(userId);
     };
+
+    // Function to query users by UID
+    async function queryUserByUID(uid) {
+        const q = query(collection(db, "users"), where("uid", "==", uid));
+
+        try {
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach(doc => {
+                console.log(doc.id, " => ", doc.data());
+            });
+        } catch (error) {
+            console.error("Error querying user by UID:", error);
+        }
+    }
 
     const creditRequester = async e => {};
     const debitPayer = async e => {};
