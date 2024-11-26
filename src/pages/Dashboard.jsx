@@ -13,7 +13,14 @@ import {
 import QRCode from "react-qr-code";
 import { QrReader } from "react-qr-reader";
 import { useLocation } from "react-router-dom";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+    collection,
+    query,
+    where,
+    getDocs,
+    doc,
+    updateDoc
+} from "firebase/firestore";
 import { auth, db } from "../firebase-config.jsx";
 
 export default function Dashboard() {
@@ -84,8 +91,8 @@ export default function Dashboard() {
         await queryUserByUID(userId);
     };
 
-    const creditRequester = async e => {};
-    const debitPayer = async e => {};
+    //const creditRequester = async e => {};
+    // const debitPayer = async e => {};
 
     // Function to query users by UID
     async function queryUserByUID(uid) {
@@ -93,7 +100,7 @@ export default function Dashboard() {
 
         try {
             const querySnapshot = await getDocs(q);
-            querySnapshot.forEach(doc => {
+            querySnapshot.forEach(async doc => {
                 console.log(doc.id, " => ", doc.data(), doc.data().balance);
 
                 let balance = doc.data().balance;
@@ -106,10 +113,16 @@ export default function Dashboard() {
                         console.log(
                             `new balance after reduction + ${balance} `
                         );
+
+                        await updateDoc(doc.ref, { balance });
+                        alert("done")
                     }
                 } else if (uid != userId) {
                     balance += requestedAmount;
                     console.log(`new balance after addition ${balance}`);
+
+                    await updateDoc(doc.ref, { balance });
+                    alert("done");
                 }
             });
         } catch (error) {
