@@ -39,7 +39,7 @@ export default function Dashboard() {
     const [failedModalOpen, setFailedModalOpen] = useState(false);
 
     useEffect(() => {
-        const auth = getAuth();
+        //const auth = getAuth();
         const user = auth.currentUser;
 
         if (user) {
