@@ -84,6 +84,9 @@ export default function Dashboard() {
         await queryUserByUID(userId);
     };
 
+    const creditRequester = async e => {};
+    const debitPayer = async e => {};
+
     // Function to query users by UID
     async function queryUserByUID(uid) {
         const q = query(collection(db, "users"), where("uid", "==", uid));
@@ -91,15 +94,28 @@ export default function Dashboard() {
         try {
             const querySnapshot = await getDocs(q);
             querySnapshot.forEach(doc => {
-                console.log(doc.id, " => ", doc.data());
+                console.log(doc.id, " => ", doc.data(), doc.data().balance);
+
+                const balance = doc.data().balance;
+
+                if (uid === userId) {
+                    if (requestedAmount > balance) {
+                        console.log("insufficent balnace to pay");
+                    } else {
+                        balance -= requestedAmount;
+                        console.log(
+                            `new balance after reduction + ${balance} `
+                        );
+                    }
+                } else if (uid != userId) {
+                    balance += requestedAmount;
+                    console.log(`new balance after addition ${balance}`);
+                }
             });
         } catch (error) {
             console.error("Error querying user by UID:", error);
         }
     }
-
-    const creditRequester = async e => {};
-    const debitPayer = async e => {};
 
     // Handles errors during the scanning process (e.g., camera access issues)
     const handleError = err => {
