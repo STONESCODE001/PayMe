@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import {
     Dialog,
@@ -34,13 +34,24 @@ export default function Dashboard() {
     //const [scannedData, setScannedData] = useState("");
     const [error, setError] = useState("");
     const [showScanner, setShowScanner] = useState(false);
+    const [userId, setuserId] = useState("");
+    const [successModalOpen, setSuccessModalOpen] = useState(false);
+    const [failedModalOpen, setFailedModalOpen] = useState(false);
 
-    {
-        /* passing data */
-    }
-    const location = useLocation();
-    const { userId } = location.state || {};
-    //console.log(userId);
+    useEffect(() => {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (user) {
+            setuserId(user.uid);
+        } else {
+            console.error("No user found, redirecting to login...");
+            window.location.href = "/"; // Redirect to the homepage
+        }
+    }, []);
+
+    /* const location = useLocation();
+    const { userId } = location.state || {};*/
 
     const generateQRCode = userId => {
         const UUID = JSON.stringify(userId);
@@ -108,6 +119,9 @@ export default function Dashboard() {
                 if (uid === userId) {
                     if (requestedAmount > balance) {
                         console.log("insufficent balnace to pay");
+                        alert("insufficent Balance ");
+                        setPayQrModal(false);
+                        setFailedModalOpen(true);
                     } else {
                         balance -= requestedAmount;
                         console.log(
@@ -115,7 +129,10 @@ export default function Dashboard() {
                         );
 
                         await updateDoc(doc.ref, { balance });
-                        alert("done")
+                        alert("done");
+                        setPayQrModal(false);
+                        setSuccessModalOpen(true);
+                        refreshPage();
                     }
                 } else if (uid != userId) {
                     balance += requestedAmount;
@@ -123,11 +140,20 @@ export default function Dashboard() {
 
                     await updateDoc(doc.ref, { balance });
                     alert("done");
+                    setPayQrModal(false);
+                    setSuccessModalOpen(true);
+                    refreshPage();
                 }
             });
         } catch (error) {
             console.error("Error querying user by UID:", error);
         }
+    }
+
+    function refreshPage(timeout = 8000) {
+        setTimeout(() => {
+            window.location.reload();
+        }, timeout);
     }
 
     // Handles errors during the scanning process (e.g., camera access issues)
@@ -420,7 +446,8 @@ export default function Dashboard() {
                                                 as="h3"
                                                 className="text-base font-bold text-gray-900"
                                             >
-                                                Confirm Payment
+                                                {" "}
+                                                You are been requested to Pay
                                             </DialogTitle>
                                             <div className="mt-2 ">
                                                 <p className="text-sm text-gray-500">
@@ -572,6 +599,119 @@ export default function Dashboard() {
                     </div>
                 </Dialog>
             </div>
+
+            {/* modal for successfully payment*/}
+            <Dialog
+                open={successModalOpen}
+                onClose={setSuccessModalOpen}
+                className="relative z-10"
+            >
+                <DialogBackdrop
+                    transition
+                    className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+                />
+
+                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                    <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                        <DialogPanel
+                            transition
+                            className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+                        >
+                            <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                                <div className="sm:flex sm:items-start">
+                                    <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:size-10">
+                                        <ExclamationTriangleIcon
+                                            aria-hidden="true"
+                                            className="size-6 text-green-600"
+                                        />
+                                    </div>
+                                    <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                        <DialogTitle
+                                            as="h3"
+                                            className="text-base font-semibold text-gray-900"
+                                        >
+                                            Payment Successfull
+                                        </DialogTitle>
+                                        <div className="mt-2">
+                                            <p className="text-sm text-gray-500">
+                                                Your payment has been
+                                                successfully processed. Thank
+                                                you for your transaction!
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                <button
+                                    type="button"
+                                    onClick={() => setSuccessModalOpen(false)}
+                                    className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
+                                >
+                                    Return to Dashboard
+                                </button>
+                            </div>
+                        </DialogPanel>
+                    </div>
+                </div>
+            </Dialog>
+
+            {/* modal for failed payment*/}
+            <Dialog
+                open={failedModalOpen}
+                onClose={setFailedModalOpen}
+                className="relative z-10"
+            >
+                <DialogBackdrop
+                    transition
+                    className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+                />
+
+                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                    <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                        <DialogPanel
+                            transition
+                            className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+                        >
+                            <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                                <div className="sm:flex sm:items-start">
+                                    <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
+                                        <ExclamationTriangleIcon
+                                            aria-hidden="true"
+                                            className="size-6 text-red-600"
+                                        />
+                                    </div>
+                                    <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                        <DialogTitle
+                                            as="h3"
+                                            className="text-base font-semibold text-gray-900"
+                                        >
+                                            Payment Failed
+                                        </DialogTitle>
+                                        <div className="mt-2">
+                                            <p className="text-sm text-gray-500">
+                                                Your payment could not be
+                                                processed due to insufficient
+                                                balance. Please check your
+                                                account and try again.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                <button
+                                    type="button"
+                                    onClick={() => setFailedModalOpen(false)}
+                                    className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
+                                >
+                                    Return to Dashboard
+                                </button>
+                            </div>
+                        </DialogPanel>
+                    </div>
+                </div>
+            </Dialog>
         </>
     );
 }
