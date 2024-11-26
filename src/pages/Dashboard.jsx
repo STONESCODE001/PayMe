@@ -40,19 +40,42 @@ export default function Dashboard() {
     const [successModalOpen, setSuccessModalOpen] = useState(false);
     const [failedModalOpen, setFailedModalOpen] = useState(false);
     const navigate = useNavigate();
+    const [currentBalance, setCurrentBalance] = useState("10,000");
 
     // Listener to detect changes in authentication state
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, currentUser => {
+        const unsubscribe = onAuthStateChanged(auth, async currentUser => {
             if (currentUser) {
                 // If the user is logged in, set user in state
                 const user = auth.currentUser;
                 setuserId(user.uid);
                 console.log("user still signed in");
+
+                const q = query(
+                    collection(db, "users"),
+                    where("uid", "==", user.uid)
+                );
+
+                try {
+                    const querySnapshot = await getDocs(q);
+
+                    querySnapshot.forEach(doc => {
+                        console.log(
+                            doc.id,
+                            " => ",
+                            doc.data(),
+                            doc.data().balance
+                        );
+                        setCurrentBalance(doc.data().balance);
+                        // Handle balance or any other user-specific data
+                    });
+                } catch (error) {
+                    console.error("Error getting documents: ", error);
+                }
             } else {
-                // If no user is logged in, redirect to the homepage
-                //navigate("/");
+                // If no user is logged in, log out or redirect
                 console.log("no user signed in");
+                // navigate("/"); // Uncomment if you want to redirect to homepage
             }
         });
 
@@ -143,7 +166,7 @@ export default function Dashboard() {
 
                 if (uid === userId) {
                     if (requestedAmount > balance) {
-                        console.log("insufficent balnace to pay");
+                        console.log("insufficent balance to pay");
                         alert("insufficent Balance ");
                         setPayQrModal(false);
                         setFailedModalOpen(true);
@@ -175,7 +198,7 @@ export default function Dashboard() {
         }
     }
 
-    function refreshPage(timeout = 8000) {
+    function refreshPage(timeout = 6500) {
         setTimeout(() => {
             window.location.reload();
         }, timeout);
@@ -211,7 +234,7 @@ export default function Dashboard() {
                                 UUID {userId}
                             </h2>
                             <h2 className="text-balance  text-center text-5xl font-black tracking-tight text-gray-900 sm:text-7xl">
-                                &#8358; 10,000
+                                &#8358; {currentBalance}
                             </h2>
                         </div>
 
@@ -671,7 +694,7 @@ export default function Dashboard() {
                                 <button
                                     type="button"
                                     onClick={() => setSuccessModalOpen(false)}
-                                    className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
+                                    className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
                                 >
                                     Return to Dashboard
                                 </button>
