@@ -13,6 +13,8 @@ import {
 import QRCode from "react-qr-code";
 import { QrReader } from "react-qr-reader";
 import { useLocation } from "react-router-dom";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { auth, db } from "../firebase-config.jsx";
 
 export default function Dashboard() {
     const [open, setOpen] = useState(false);
@@ -70,11 +72,33 @@ export default function Dashboard() {
         }*/
     };
 
-    const payFunction = () => {
+    const payFunction = async e => {
         alert(
             requesterUid + " " + requestedAmount + " current user uid" + userId
         );
+
+        const q = query(
+            collection(db, "users"),
+            where("uid", "==", requesterUid)
+        );
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(doc => {
+            // doc.data() is never undefined for query doc snapshots
+            console.log(doc.id, " => ", doc.data());
+        });
+
+        const q = query(collection(db, "users"), where("uid", "==", userId));
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(doc => {
+            // doc.data() is never undefined for query doc snapshots
+            console.log("current user", doc.id, " => ", doc.data());
+        });
     };
+
+    const creditRequester = async e => {};
+    const debitPayer = async e => {};
 
     // Handles errors during the scanning process (e.g., camera access issues)
     const handleError = err => {
