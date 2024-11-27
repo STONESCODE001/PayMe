@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import payMeLogo from "../assets/logo.png";
 
 const navigation = [
-    { name: "Product", href: "#" },
-    { name: "Features", href: "#" },
+    { name: "Home", href: "#" }
+    /*{ name: "Features", href: "#" },
     { name: "Marketplace", href: "#" },
-    { name: "Company", href: "#" }
+    { name: "Company", href: "#" }*/
 ];
 
 export default function Herosection() {
@@ -21,11 +22,11 @@ export default function Herosection() {
                 >
                     <div className="flex lg:flex-1">
                         <a href="#" className="-m-1.5 p-1.5">
-                            <span className="sr-only">Your Company</span>
+                            <span className="sr-only">PayMe</span>
                             <img
-                                alt=""
-                                src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
-                                className="h-8 w-auto"
+                                alt="PaymeLogo"
+                                src={payMeLogo}
+                                className="h-20 w-auto"
                             />
                         </a>
                     </div>
@@ -68,7 +69,7 @@ export default function Herosection() {
                     <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                         <div className="flex items-center justify-between">
                             <a href="#" className="-m-1.5 p-1.5">
-                                <span className="sr-only">Your Company</span>
+                                <span className="sr-only"> Payme</span>
                                 <img
                                     alt=""
                                     src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
@@ -143,12 +144,13 @@ export default function Herosection() {
                         </div>
                     </div>
                     <div className="text-center">
-                        <h1 className="text-balance text-5xl font-black tracking-tight text-gray-900 sm:text-7xl">
-                            Data to enrich your online business
+                        <h1 className="text-balance text-5xl font-black tracking-tight text-gray-900 sm:text-6xl">
+                            Simplify Payments: Link Your Bank Accounts and Pay
+                            via QR Code
                         </h1>
-                        <p className="mt-8 text-pretty text-lg font-medium hidden text-gray-500 sm:text-xl/8">
-                            Anim aute id magna aliqua ad ad non deserunt sunt.
-                            Qui irure qui lorem cupidatat commodo. Elit
+                        <p className="mt-8 text-pretty text-lg font-medium  text-gray-500 sm:text-xl/8">
+                            No more switching between apps & asking for account
+                            number—just scan and pay instantly
                         </p>
                         <div className="mt-10 flex items-center justify-center hidden gap-x-6">
                             <a

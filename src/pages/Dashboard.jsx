@@ -252,7 +252,7 @@ export default function Dashboard() {
                                             onClick={handleShowCamera}
                                             //onClick={() => setPayQrModal(true)}
                                         >
-                                            Scan Code
+                                            Scan to Pay
                                         </button>
                                         <div className="">
                                             <button
@@ -260,7 +260,7 @@ export default function Dashboard() {
                                                 onClick={() => setOpen(true)}
                                                 className="block text-sm/6 font-semibold text-gray-100 bg-indigo-400 p-1 px-2.5 border-2 border-indigo-500 rounded-xl"
                                             >
-                                                Create Code
+                                                Create to Request
                                             </button>
                                         </div>
                                     </div>
